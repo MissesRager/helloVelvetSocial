@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velvet Social</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --plum:     #3B1040;
+    --magenta:  #9B1B6E;
+    --teal:     #0D5C63;
+    --rosegold: #C4876A;
+    --cream:    #F5EDE0;
+    --gold:     #B8860B;
+    --wine:     #6B1A36;
+    --plum-light: #521558;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--plum);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(180deg, rgba(59,16,64,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  .nav-logo span { color: var(--rosegold); }
+  .nav-logo:hover { color: var(--rosegold); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,237,224,0.6);
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover { color: var(--rosegold); }
+
+  /* ── HERO ── */
+  #home {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 32px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(155,27,110,0.25) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(13,92,99,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(107,26,54,0.3) 0%, transparent 50%);
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--rosegold);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 12vw, 140px);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--cream);
+    opacity: 0;
+    animation: fadeUp 1s ease 0.4s forwards;
+  }
+
+  .hero-title .accent { 
+    color: var(--magenta);
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--rosegold);
+    letter-spacing: 0.15em;
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(180deg, transparent, var(--rosegold), transparent);
+    margin: 40px auto;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+  }
+
+  .hero-bio {
+    font-size: clamp(13px, 1.8vw, 16px);
+    line-height: 1.9;
+    color: rgba(245,237,224,0.65);
+    max-width: 540px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 1s ease 1s forwards;
+  }
+
+  .hero-bio strong {
+    color: var(--cream);
+    font-weight: 500;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.4s forwards;
+    cursor: pointer;
+  }
+
+  .scroll-hint span {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(245,237,224,0.4);
+  }
+
+  .scroll-arrow {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--rosegold), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  /* ── DOORS SECTION ── */
+  #experience {
+    padding: 100px 32px;
+    position: relative;
+  }
+
+  .section-intro {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-intro h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .section-intro p {
+    font-size: 13px;
+    color: rgba(245,237,224,0.5);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .doors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1100px;
+    margin: 0 auto;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .doors { grid-template-columns: 1fr; }
+  }
+
+  .door {
+    position: relative;
+    min-height: 520px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: flex 0.6s ease;
+  }
+
+  .door-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.6s ease;
+  }
+
+  .door:hover .door-bg { transform: scale(1.05); }
+
+  .door-1 .door-bg {
+    background: linear-gradient(160deg, #9B1B6E 0%, #521558 50%, #3B1040 100%);
+  }
+
+  .door-2 .door-bg {
+    background: linear-gradient(160deg, #3B1040 0%, #6B1A36 50%, #9B1B6E 100%);
+  }
+
+  .door-3 .door-bg {
+    background: linear-gradient(160deg, #0D5C63 0%, #3B1040 50%, #521558 100%);
+  }
+
+  .door-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    transition: opacity 0.4s ease;
+  }
+
+  .door:hover .door-overlay { opacity: 0; }
+
+  .door-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 40px 32px;
+    border-top: 3px solid transparent;
+    transition: border-color 0.4s ease, padding 0.4s ease;
+  }
+
+  .door-1:hover .door-content { border-color: var(--magenta); }
+  .door-2:hover .door-content { border-color: var(--rosegold); }
+  .door-3:hover .door-content { border-color: var(--teal); }
+
+  .door-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px;
+    font-weight: 300;
+    color: rgba(245,237,224,0.06);
+    line-height: 1;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    transition: opacity 0.4s ease, color 0.4s ease;
+  }
+
+  .door:hover .door-number { 
+    opacity: 1; 
+    color: rgba(245,237,224,0.12);
+  }
+
+  .door-label {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    transition: color 0.4s ease;
+  }
+
+  .door-1 .door-label { color: var(--magenta); }
+  .door-2 .door-label { color: var(--rosegold); }
+  .door-3 .door-label { color: var(--teal); }
+
+  .door-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 3.5vw, 44px);
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .door-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(245,237,224,0.65);
+    font-weight: 300;
+    margin-bottom: 24px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, opacity 0.4s ease;
+    opacity: 0;
+  }
+
+  .door:hover .door-desc {
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .door-events {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease 0.1s, opacity 0.4s ease 0.1s;
+    opacity: 0;
+    margin-bottom: 0;
+  }
+
+  .door:hover .door-events {
+    max-height: 300px;
+    opacity: 1;
+    margin-bottom: 20px;
+  }
+
+  .door-event-item {
+    font-size: 11px;
+    color: rgba(245,237,224,0.5);
+    letter-spacing: 0.05em;
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .door-event-item::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--rosegold);
+  }
+
+  .door-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--cream);
+    transition: gap 0.3s ease, color 0.3s ease;
+  }
+
+  .door-1:hover .door-cta { color: var(--magenta); }
+  .door-2:hover .door-cta { color: var(--rosegold); }
+  .door-3:hover .door-cta { color: var(--teal); }
+
+  .door:hover .door-cta { gap: 14px; }
+
+  .door-cta::after {
+    content: '→';
+    font-size: 14px;
+  }
+
+  /* ── ABOUT SECTION ── */
+  #about {
+    padding: 100px 32px;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    #about { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  .about-left h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+
+  .about-left h2 em {
+    font-style: italic;
+    color: var(--magenta);
+  }
+
+  .about-left p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: rgba(245,237,224,0.65);
+    font-weight: 300;
+    margin-bottom: 16px;
+  }
+
+  .about-left p strong {
+    color: var(--cream);
+    font-weight: 500;
+  }
+
+  .about-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .about-stat {
+    padding: 24px;
+    border: 1px solid rgba(245,237,224,0.08);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.02);
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .about-stat:hover {
+    border-color: rgba(196,135,106,0.3);
+    background: rgba(196,135,106,0.05);
+  }
+
+  .about-stat-label {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--rosegold);
+    margin-bottom: 8px;
+  }
+
+  .about-stat-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.4;
+  }
+
+  /* ── COMING SOON ── */
+  #notify {
+    padding: 100px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .notify-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(155,27,110,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(13,92,99,0.15) 0%, transparent 60%);
+  }
+
+  .notify-content { position: relative; z-index: 2; max-width: 560px; margin: 0 auto; }
+
+  .notify-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+
+  .notify-content h2 em {
+    font-style: italic;
+    color: var(--rosegold);
+  }
+
+  .notify-content p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: rgba(245,237,224,0.6);
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+
+  .email-form {
+    display: flex;
+    gap: 0;
+    max-width: 420px;
+    margin: 0 auto 20px;
+    border: 1px solid rgba(245,237,224,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .email-form:focus-within { border-color: var(--rosegold); }
+
+  .email-input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: none;
+    outline: none;
+    padding: 16px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+  }
+
+  .email-input::placeholder { color: rgba(245,237,224,0.3); }
+
+  .email-btn {
+    background: var(--magenta);
+    border: none;
+    padding: 16px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .email-btn:hover { background: var(--wine); }
+
+  .social-links {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  .social-link {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(245,237,224,0.4);
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .social-link:hover { color: var(--rosegold); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid rgba(245,237,224,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,237,224,0.4);
+  }
+
+  .footer-logo span { color: var(--rosegold); }
+
+  .footer-copy {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(245,237,224,0.25);
+    text-transform: uppercase;
+  }
+
+  /* Panels */
+  .panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    overflow-y: auto;
+  }
+
+  .panel.active { display: block; }
+
+  .panel-inner {
+    min-height: 100vh;
+    padding: 100px 48px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .panel-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(245,237,224,0.5);
+    cursor: pointer;
+    margin-bottom: 48px;
+    transition: color 0.3s;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .panel-back:hover { color: var(--rosegold); }
+  .panel-back::before { content: '←'; font-size: 14px; }
+
+  .panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .panel-sub {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .panel-divider {
+    width: 60px;
+    height: 2px;
+    margin-bottom: 48px;
+  }
+
+  .event-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .event-card {
+    border-radius: 4px;
+    padding: 32px 28px;
+    border: 1px solid rgba(245,237,224,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+  }
+
+  .event-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .event-card-emoji {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .event-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  .event-card p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(245,237,224,0.55);
+    font-weight: 300;
+  }
+
+  /* Panel 1 */
+  #panel-showout { background: linear-gradient(160deg, #521558 0%, #3B1040 40%, #2A0A30 100%); }
+  #panel-showout .panel-sub { color: var(--magenta); }
+  #panel-showout .panel-divider { background: var(--magenta); }
+  #panel-showout .event-card:hover { border-color: rgba(155,27,110,0.4); }
+
+  /* Panel 2 */
+  #panel-slowdown { background: linear-gradient(160deg, #3B1040 0%, #6B1A36 40%, #3B1040 100%); }
+  #panel-slowdown .panel-sub { color: var(--rosegold); }
+  #panel-slowdown .panel-divider { background: var(--rosegold); }
+  #panel-slowdown .event-card:hover { border-color: rgba(196,135,106,0.4); }
+
+  /* Panel 3 */
+  #panel-showup { background: linear-gradient(160deg, #0D3D40 0%, #3B1040 40%, #2A0A30 100%); }
+  #panel-showup .panel-sub { color: var(--teal); }
+  #panel-showup .panel-divider { background: var(--teal); }
+  #panel-showup .event-card:hover { border-color: rgba(13,92,99,0.5); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="goHome()">Velvet <span>Social</span></div>
+  <ul class="nav-links">
+    <li><a onclick="scrollToSection('experience')">Experience</a></li>
+    <li><a onclick="scrollToSection('about')">About</a></li>
+    <li><a onclick="scrollToSection('notify')">Stay Connected</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Coming Soon — A New Kind of Collective</div>
+    <h1 class="hero-title">Velvet<br><span class="accent">Social</span></h1>
+    <div class="hero-tagline">A Black, Queer Folx Collective</div>
+    <div class="hero-divider"></div>
+    <p class="hero-bio">
+      For the <strong>Black queer folx</strong> who've been looking...<br>
+      We see you. We're coming. <strong>Hold on.</strong>
+    </p>
+  </div>
+  <div class="scroll-hint" onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})">
+    <span>Explore</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- DOORS -->
+<section id="experience">
+  <div class="section-intro">
+    <h2>Choose Your Vibe</h2>
+    <p>Every experience, one intention</p>
+  </div>
+
+  <div class="doors">
+    <!-- SHOW OUT -->
+    <div class="door door-1" onclick="openPanel('showout')">
+      <div class="door-bg"></div>
+      <div class="door-overlay"></div>
+      <div class="door-content">
+        <div class="door-number">01</div>
+        <div class="door-label">We outside</div>
+        <div class="door-title">Show<br>Out</div>
+        <div class="door-desc">High energy, elevated, celebratory. The room is lit, the music is right, and everyone is stunning.</div>
+        <div class="door-events">
+          <div class="door-event-item">Lowkey Mixers</div>
+          <div class="door-event-item">Watch Nights</div>
+          <div class="door-event-item">Holiday Hangs</div>
+          <div class="door-event-item">Speed Connecting</div>
+        </div>
+        <div class="door-cta">Enter</div>
+      </div>
+    </div>
+
+    <!-- SLOW DOWN -->
+    <div class="door door-2" onclick="openPanel('slowdown')">
+      <div class="door-bg"></div>
+      <div class="door-overlay"></div>
+      <div class="door-content">
+        <div class="door-number">02</div>
+        <div class="door-label">We resting</div>
+        <div class="door-title">Slow<br>Down</div>
+        <div class="door-desc">No performance required. Low pressure, low lift. Just show up exactly as you are and breathe.</div>
+        <div class="door-events">
+          <div class="door-event-item">Soft Sundays</div>
+          <div class="door-event-item">Park Gatherings</div>
+          <div class="door-event-item">BYO Everything</div>
+          <div class="door-event-item">Just Exist</div>
+        </div>
+        <div class="door-cta">Enter</div>
+      </div>
+    </div>
+
+    <!-- SHOW UP -->
+    <div class="door door-3" onclick="openPanel('showup')">
+      <div class="door-bg"></div>
+      <div class="door-overlay"></div>
+      <div class="door-content">
+        <div class="door-number">03</div>
+        <div class="door-label">We here for you</div>
+        <div class="door-title">Show<br>Up</div>
+        <div class="door-desc">Real community happens on a Tuesday. We show up in the mundane moments, not just the fun ones.</div>
+        <div class="door-events">
+          <div class="door-event-item">Everyday Activity Calendar</div>
+          <div class="door-event-item">Body Doubling Sessions</div>
+          <div class="door-event-item">Virtual Hangouts</div>
+          <div class="door-event-item">Community Support</div>
+        </div>
+        <div class="door-cta">Enter</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left">
+    <h2>Not a bar.<br>Not a <em>network.</em><br>A home base.</h2>
+    <p>Velvet Social is a community-first social club for Black, queer folx — built around the idea that we deserve spaces that hold <strong>all of us.</strong></p>
+    <p>Not just the pride parade version. Not just the cookout version. The soft, the edgy, the weird, the regal, the tired, the thriving — all of it, all at once.</p>
+    <p>Because Black queer identity has never been one thing. <strong>Neither are we.</strong></p>
+  </div>
+  <div class="about-right">
+    <div class="about-stat">
+      <div class="about-stat-label">The Vision</div>
+      <div class="about-stat-text">"Community for the whole you — not just the part that's easy to explain."</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat-label">The Aesthetic</div>
+      <div class="about-stat-text">Luxe but yours. Grown and sexy but never intimidating. No rainbow chaos.</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat-label">The Promise</div>
+      <div class="about-stat-text">A space where you can Show Out, Slow Down, and Show Up — all in the same breath.</div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTIFY -->
+<section id="notify">
+  <div class="notify-bg"></div>
+  <div class="notify-content">
+    <h2>We're building<br>something <em>for you.</em></h2>
+    <p>Be the first to know when Velvet Social opens its doors. No spam. Just us, when we're ready.</p>
+    <form class="email-form" method="POST" action="https://646cf26e.sibforms.com/serve/MUIFAEf3TQFyuZdnvUs4LBWYwWRLrvNNcOS1i03LoCOT-OAXBJVmARVyNBpiMxi6FsFFIGsifWOGJOnic37xcWUam_TNdDxJPW0rZzyVuzUhBEpvu8rhmzKE5vAB4EvidA6LY3KjejK6ktBV9A5Eq5P2JKSm-gWm4V84dgc4xMk4yiWxnotR0U_ZlRxHbSS4jn5VsmyWMhtdom31Qg==" target="_blank">
+      <input class="email-input" type="email" name="EMAIL" placeholder="your@email.com" required />
+      <input type="text" name="email_address_check" value="" style="display:none;">
+      <input type="hidden" name="locale" value="en">
+      <input type="hidden" name="html_type" value="simple">
+      <button class="email-btn" type="submit">Notify Me</button>
+    </form>
+    <div class="social-links">
+      <a class="social-link" href="https://instagram.com/helloVelvetSocial" target="_blank">Instagram</a>
+      <a class="social-link" href="https://tiktok.com/@velvet.social" target="_blank">TikTok</a>
+      <a class="social-link" href="https://x.com/theVelvetSocial" target="_blank">Twitter</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Velvet <span>Social</span></div>
+  <div class="footer-copy">© 2026 Velvet Social — A Black, Queer Folx Collective</div>
+</footer>
+
+<!-- PANELS -->
+<div class="panel" id="panel-showout">
+  <div class="panel-inner">
+    <button class="panel-back" onclick="closePanel('showout')">Back</button>
+    <div class="panel-title">Show<br>Out</div>
+    <div class="panel-sub">We outside. We lit. We having a moment.</div>
+    <div class="panel-divider"></div>
+    <div class="event-cards">
+      <div class="event-card">
+        <span class="event-card-emoji">🍸</span>
+        <h3>Lowkey Mixer</h3>
+        <p>Lounge vibes, cute cocktails, ambient lighting, conversation cards, and a few ice breakers. Come as you are.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">📺</span>
+        <h3>Watch Night</h3>
+        <p>Popular shows, movies, and sporting events — watched together, with the right people, in the right space.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">🥂</span>
+        <h3>Holiday Hangs</h3>
+        <p>Intentional seasonal celebrations. Because every holiday deserves a space that actually feels like home.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">✨</span>
+        <h3>Speed Connecting</h3>
+        <p>Curated romantic AND platonic connection events. Because finding your people shouldn't feel like a chore.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-slowdown">
+  <div class="panel-inner">
+    <button class="panel-back" onclick="closePanel('slowdown')">Back</button>
+    <div class="panel-title">Slow<br>Down</div>
+    <div class="panel-sub">No performance required. Just show up.</div>
+    <div class="panel-divider"></div>
+    <div class="event-cards">
+      <div class="event-card">
+        <span class="event-card-emoji">🌿</span>
+        <h3>Soft Sunday</h3>
+        <p>Park gatherings on nice days. Blankets, pillows, books, board games, snacks. BYO whatever you need.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">😮‍💨</span>
+        <h3>Just Exist</h3>
+        <p>Space for those who want to nap, read, relax, or simply be around people without having to perform.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">🎲</span>
+        <h3>Low Lift Activities</h3>
+        <p>Voluntary, easy, fun. Board games, card games, casual conversation. Zero pressure to participate in anything.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-showup">
+  <div class="panel-inner">
+    <button class="panel-back" onclick="closePanel('showup')">Back</button>
+    <div class="panel-title">Show<br>Up</div>
+    <div class="panel-sub">Real community happens on a Tuesday.</div>
+    <div class="panel-divider"></div>
+    <div class="event-cards">
+      <div class="event-card">
+        <span class="event-card-emoji">🗓️</span>
+        <h3>Everyday Calendar</h3>
+        <p>Members post their daily needs — errands, walks, studying, appointments. Others can tag along for company and support.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">🧠</span>
+        <h3>Body Doubling</h3>
+        <p>Virtual and in-person sessions for neurodivergent members. Sometimes you just need someone in the room with you.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">💻</span>
+        <h3>Virtual Hangouts</h3>
+        <p>Video sessions with breakout rooms, online activities, and digital community for when you can't make it in person.</p>
+      </div>
+      <div class="event-card">
+        <span class="event-card-emoji">🖤</span>
+        <h3>Community Care</h3>
+        <p>Because showing up for each other in the quiet moments is what makes a community real.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openPanel(name) {
+    document.getElementById('panel-' + name).classList.add('active');
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+  }
+
+  function closePanel(name) {
+    document.getElementById('panel-' + name).classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function goHome() {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.body.style.overflow = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function scrollToSection(id) {
+    // Close any open panels first
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.body.style.overflow = '';
+    // Small delay to let panel close before scrolling
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+
+  // Handle Brevo form submission — redirect to thank you message
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.email-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = form.querySelector('input[type="email"]').value;
+        if (!email) return;
+        
+        // Submit the form data to Brevo
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          mode: 'no-cors'
+        });
+
+        // Show thank you message
+        const notifyContent = document.querySelector('.notify-content');
+        notifyContent.innerHTML = `
+          <h2 style="font-family:'Cormorant Garamond',serif; font-size:clamp(32px,5vw,52px); font-weight:300; color:var(--cream); margin-bottom:16px;">
+            You found us.
+          </h2>
+          <p style="font-size:18px; line-height:1.8; color:rgba(245,237,224,0.8); font-weight:300; font-family:'Cormorant Garamond',serif; font-style:italic;">
+            We see you. Hold on, Sib. We're coming. 🖤
+          </p>
+        `;
+      });
+    }
+  });
+</script>
+</body>
+</html>
